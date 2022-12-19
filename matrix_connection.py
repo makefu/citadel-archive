@@ -26,11 +26,11 @@ def matrix_client():
 def get_download_url(url):
     u = urlparse(url)
     assert u.scheme == 'mxc'
-    host = u.netloc
+    host = "https://" + u.netloc
     resolvers = _download_url_resolvers
-    resolver = resolvers.get(host) or MatrixClient(host).api.get_download_url
+    resolver = resolvers.get(host) or matrix_client().api.get_download_url
     resolvers[host] = resolver
-    return 'https://' + resolver(url)
+    return resolver(url)
 
 
 get_matrix_download_url = MatrixClient(MATRIX_HOST).api.get_download_url

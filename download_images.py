@@ -5,8 +5,11 @@ import click
 import requests
 
 import database_connection  # noqa: F401
-from matrix_connection import get_download_url
+from matrix_connection import get_download_url,matrix_client
 from schema import Message
+
+import logging
+logging.basicConfig(level="DEBUG")
 
 
 def download_stem(message, prefer_thumbnails):
@@ -22,13 +25,14 @@ def run_downloads(messages, download_dir, prefer_thumbnails):
     :param download_dir: Location where the images shall be stored
     :param prefer_thumbnails: Whether to prefer thumbnails than full images.
     """
+    client = matrix_client()
     s = requests.Session()
     for msg in messages:
         image_url = (msg.thumbnail_url if prefer_thumbnails else None) or msg.image_url
         try:
             download_url = get_download_url(image_url)
             try:
-                res = s.head(download_url)
+                res = s.head(download_url + f"?access_token={client.api.token}")
                 res.raise_for_status()
                 mtype, subtype = res.headers['content-type'].split('/', 2)
                 if mtype != 'image':
@@ -39,7 +43,7 @@ def run_downloads(messages, download_dir, prefer_thumbnails):
                 continue
 
             try:
-                res = s.get(download_url)
+                res = s.get(download_url + f"?access_token={client.api.token}")
                 res.raise_for_status()
                 filename = (download_dir / download_stem(msg, prefer_thumbnails)
                             ).with_suffix('.' + subtype)

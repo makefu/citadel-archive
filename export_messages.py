@@ -39,6 +39,7 @@ def encode_message(message):
             # give up
             del data['content']
         else:
+            print(url)
             content['url'] = get_download_url(url)
     return data
 
