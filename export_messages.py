@@ -51,10 +51,11 @@ def replace_by_local_image(data):
         url = content['file']['url'] if 'file' in content else content['url']
         mimetype = content['info']['mimetype']
         if 'thumbnail_url' in content['info'] and content['info']['thumbnail_url'] != '':
-            url, mimetype = content['info']['thumbnail_url'], content['info']['thumbnail_info']['mimetype']
+            print(content['info'])
+            url, mimetype = content['info']['thumbnail_url'], content['info']['mimetype']
         _, subtype = mimetype.split('/', 2)
         url = urlparse(url)
-        content['url'] = 'thumbnails/' + url.path.strip('/') + '.' + subtype
+        content['url'] = 'thumbnails/' + str(url.path).strip('/') + '.' + subtype
     return data
 
 
